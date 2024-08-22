@@ -1,6 +1,6 @@
 # YATL Core
 
-YATL (Yet Another Tentacle Language) is an innovative, octopus-themed markup language designed for defining and managing state machines. This repository contains the core specification and test suite for YATL.
+🦑 YATL (Yet Another Tentacle Language) is an innovative, octopus-themed markup language designed for defining and managing state machines. This repository contains the core specification and test suite for YATL.
 
 ## Repository Structure
 
