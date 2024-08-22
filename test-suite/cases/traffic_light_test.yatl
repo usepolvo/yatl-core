@@ -1,0 +1,23 @@
+name: TrafficLightTest
+initial_state: Red
+
+states:
+  Red:
+    type: normal
+    transitions:
+      - event: TimerExpired
+        target: Green
+  Green:
+    type: normal
+    transitions:
+      - event: TimerExpired
+        target: Yellow
+  Yellow:
+    type: normal
+    transitions:
+      - event: TimerExpired
+        target: Red
+
+events:
+  TimerExpired:
+    data: []

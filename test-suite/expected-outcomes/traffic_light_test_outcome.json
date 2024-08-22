@@ -1,0 +1,12 @@
+{
+  "name": "TrafficLightTest",
+  "initial_state": "Red",
+  "final_state": null,
+  "transitions": [
+    { "from": "Red", "event": "TimerExpired", "to": "Green" },
+    { "from": "Green", "event": "TimerExpired", "to": "Yellow" },
+    { "from": "Yellow", "event": "TimerExpired", "to": "Red" }
+  ],
+  "is_complete": true,
+  "is_deterministic": true
+}

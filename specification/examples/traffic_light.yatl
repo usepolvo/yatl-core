@@ -1,0 +1,42 @@
+name: TrafficLight
+initial_state: Red
+
+states:
+  Red:
+    type: normal
+    on_enter: [turnOnRed]
+    on_exit: [turnOffRed]
+    transitions:
+      - event: TimerExpired
+        target: Green
+  Green:
+    type: normal
+    on_enter: [turnOnGreen]
+    on_exit: [turnOffGreen]
+    transitions:
+      - event: TimerExpired
+        target: Yellow
+  Yellow:
+    type: normal
+    on_enter: [turnOnYellow]
+    on_exit: [turnOffYellow]
+    transitions:
+      - event: TimerExpired
+        target: Red
+
+actions:
+  turnOnRed:
+    type: function
+    code: |
+      print("Red light on")
+  turnOffRed:
+    type: function
+    code: |
+      print("Red light off")
+  # ... similar for other colors
+
+events:
+  TimerExpired:
+    data:
+      - name: duration
+        type: number
