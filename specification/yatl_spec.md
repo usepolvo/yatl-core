@@ -79,11 +79,117 @@ triggers:
     source: storage.googleapis.com
 ```
 
-[Rest of the content remains the same as in the previous specification, including States, Actions, Variables, and Conditions sections]
+## States
+
+States are defined under the states section. Each state has a unique name and properties based on its type.
+
+### Task State
+
+```yaml
+StateName:
+  type: task
+  action: <actionName>
+  next: <nextStateName>
+```
+
+### Choice State
+
+```yaml
+StateName:
+  type: choice
+  choices:
+    - condition: <condition>
+      next: <nextStateName>
+  default: <defaultStateName>
+```
+
+### Loop State
+
+```yaml
+StateName:
+  type: loop
+  collection: <collectionVariable>
+  iterator: <iteratorName>
+  body:
+    <stateMachineDefinition>
+  next: <nextStateName>
+```
+
+### Parallel State
+
+```yaml
+StateName:
+  type: parallel
+  branches:
+    - <stateMachineDefinition>
+  next: <nextStateName>
+```
+
+### End State
+
+```yaml
+StateName:
+  type: end
+  result: <resultData>
+```
+
+### Fail State
+
+```yaml
+StateName:
+  type: fail
+  error: <errorType>
+  cause: <errorDescription>
+```
+
+## Actions
+
+Actions are defined in the actions section. Each action can include executable code:
+
+```yaml
+actions:
+  actionName:
+    description: "Description of the action"
+    language: <programmingLanguage>
+    code: |
+      # Code block
+      # Can reference variables using context['variableName']
+      # Trigger data available via context['trigger']
+```
+
+## Variables
+
+Variables are declared in the variables section:
+
+```yaml
+variables:
+  variableName: <dataType>
+```
+
+Variables can be referenced in states and actions using the context dictionary: `context['variableName']`
+
+## Conditions
+
+Conditions are used in choice states to determine the next state:
+
+```yaml
+condition:
+  variable: <variableName>
+  operator: <operatorType>
+  value: <comparisonValue>
+```
+
+Supported operators include:
+
+- `equals`
+- `not_equals`
+- `greater_than`
+- `less_than`
+- `contains`
 
 ## Example
 
-Here's an updated example of a YATL workflow for processing orders, now including a webhook trigger:
+Here's an example of a YATL 1.2 workflow for processing orders:
 
 ```yaml
 name: OrderProcessingWorkflow
@@ -118,12 +224,12 @@ states:
     type: choice
     choices:
       - condition:
-          variable: $.paymentStatus
+          variable: paymentStatus
           operator: equals
           value: SUCCESS
         next: FulfillOrder
       - condition:
-          variable: $.paymentStatus
+          variable: paymentStatus
           operator: equals
           value: FAILED
         next: CancelOrder
@@ -161,47 +267,48 @@ actions:
       context['order_id'] = order['id']
       context['items'] = order['items']
       context['total_amount'] = order['total_amount']
+      print(f"Received order {context['order_id']}")
 
   validateOrder:
     description: "Validate the order"
     language: python
     code: |
       context['is_valid'] = context['total_amount'] > 0 and len(context['items']) > 0
+      print(f"Order {context['order_id']} validity: {context['is_valid']}")
 
   processPayment:
     description: "Process payment for the order"
     language: python
     code: |
-      # Payment processing logic here
-      context['paymentStatus'] = 'SUCCESS'
+      # This would typically involve calling a payment gateway API
+      context['paymentStatus'] = 'SUCCESS'  # Simulating successful payment
+      print(f"Payment processed for order {context['order_id']}: {context['paymentStatus']}")
 
   fulfillOrder:
     description: "Fulfill the order"
     language: python
     code: |
-      # Order fulfillment logic here
+      # This would typically involve calling a fulfillment system API
       print(f"Fulfilling order {context['order_id']}")
 
   cancelOrder:
     description: "Cancel the order"
     language: python
     code: |
-      # Order cancellation logic here
       print(f"Cancelling order {context['order_id']}")
 
   handlePaymentError:
     description: "Handle payment processing errors"
     language: python
     code: |
-      # Error handling logic here
       print(f"Payment error for order {context['order_id']}")
 
   sendNotification:
     description: "Send notification to the customer"
     language: python
     code: |
-      # Notification logic here
-      print(f"Sending notification for order {context['order_id']}")
+      status = "processed" if context['paymentStatus'] == 'SUCCESS' else "cancelled"
+      print(f"Sending notification for order {context['order_id']}: Order {status}")
 
 variables:
   order_id: string
@@ -211,4 +318,4 @@ variables:
   paymentStatus: string
 ```
 
-This example demonstrates the new trigger feature along with the existing YATL concepts.
+This example demonstrates various features of YATL 1.2, including the new trigger system, task states, choice states, actions with code, and variable usage. The workflow is triggered by a webhook, processes an order, handles payment, and notifies the customer of the outcome.
