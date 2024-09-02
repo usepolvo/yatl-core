@@ -1,42 +1,72 @@
 name: TrafficLight
+description: "A simple traffic light simulation"
+version: "1.2"
+triggers:
+  - type: schedule
+    cron: "*/1 * * * *"  # Run every minute
 initial_state: Red
 
 states:
   Red:
-    type: normal
-    on_enter: [turnOnRed]
-    on_exit: [turnOffRed]
-    transitions:
-      - event: TimerExpired
-        target: Green
+    type: task
+    action: turnOnRed
+    next: WaitRed
+
+  WaitRed:
+    type: task
+    action: wait
+    next: Green
+
   Green:
-    type: normal
-    on_enter: [turnOnGreen]
-    on_exit: [turnOffGreen]
-    transitions:
-      - event: TimerExpired
-        target: Yellow
+    type: task
+    action: turnOnGreen
+    next: WaitGreen
+
+  WaitGreen:
+    type: task
+    action: wait
+    next: Yellow
+
   Yellow:
-    type: normal
-    on_enter: [turnOnYellow]
-    on_exit: [turnOffYellow]
-    transitions:
-      - event: TimerExpired
-        target: Red
+    type: task
+    action: turnOnYellow
+    next: WaitYellow
+
+  WaitYellow:
+    type: task
+    action: wait
+    next: Red
 
 actions:
   turnOnRed:
-    type: function
+    description: "Turn on the red light"
+    language: python
     code: |
       print("Red light on")
-  turnOffRed:
-    type: function
-    code: |
-      print("Red light off")
-  # ... similar for other colors
+      context['current_color'] = 'red'
 
-events:
-  TimerExpired:
-    data:
-      - name: duration
-        type: number
+  turnOnGreen:
+    description: "Turn on the green light"
+    language: python
+    code: |
+      print("Green light on")
+      context['current_color'] = 'green'
+
+  turnOnYellow:
+    description: "Turn on the yellow light"
+    language: python
+    code: |
+      print("Yellow light on")
+      context['current_color'] = 'yellow'
+
+  wait:
+    description: "Wait for the specified duration"
+    language: python
+    code: |
+      import time
+      duration = 60 if context['current_color'] in ['red', 'green'] else 5
+      print(f"Waiting for {duration} seconds")
+      time.sleep(duration)
+
+variables:
+  current_color: string

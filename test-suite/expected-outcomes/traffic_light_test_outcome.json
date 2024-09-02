@@ -1,11 +1,57 @@
 {
   "name": "TrafficLightTest",
+  "description": "A simple traffic light test with a schedule trigger",
+  "version": "1.2",
+  "triggers": [
+    {
+      "type": "schedule",
+      "cron": "*/5 * * * *"
+    }
+  ],
   "initial_state": "Red",
   "final_state": null,
-  "transitions": [
-    { "from": "Red", "event": "TimerExpired", "to": "Green" },
-    { "from": "Green", "event": "TimerExpired", "to": "Yellow" },
-    { "from": "Yellow", "event": "TimerExpired", "to": "Red" }
+  "states": [
+    {
+      "name": "Red",
+      "type": "task",
+      "action": "turnOnRed",
+      "next": "Green"
+    },
+    {
+      "name": "Green",
+      "type": "task",
+      "action": "turnOnGreen",
+      "next": "Yellow"
+    },
+    {
+      "name": "Yellow",
+      "type": "task",
+      "action": "turnOnYellow",
+      "next": "Red"
+    }
+  ],
+  "actions": [
+    {
+      "name": "turnOnRed",
+      "description": "Turn on the red light",
+      "language": "python"
+    },
+    {
+      "name": "turnOnGreen",
+      "description": "Turn on the green light",
+      "language": "python"
+    },
+    {
+      "name": "turnOnYellow",
+      "description": "Turn on the yellow light",
+      "language": "python"
+    }
+  ],
+  "variables": [
+    {
+      "name": "current_color",
+      "type": "string"
+    }
   ],
   "is_complete": true,
   "is_deterministic": true

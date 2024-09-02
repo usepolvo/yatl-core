@@ -18,20 +18,44 @@ def load_expected_outcome(file_path):
 def validate_yatl(yatl_data, expected_outcome):
     errors = []
 
-    if yatl_data["name"] != expected_outcome["name"]:
-        errors.append(f"Name mismatch: expected {expected_outcome['name']}, got {yatl_data['name']}")
+    for key in ["name", "description", "version", "initial_state"]:
+        if yatl_data.get(key) != expected_outcome.get(key):
+            errors.append(f"{key.capitalize()} mismatch: expected {expected_outcome.get(key)}, got {yatl_data.get(key)}")
 
-    if yatl_data["initial_state"] != expected_outcome["initial_state"]:
-        errors.append(
-            f"Initial state mismatch: expected {expected_outcome['initial_state']}, got {yatl_data['initial_state']}"
-        )
+    if "triggers" in expected_outcome:
+        if "triggers" not in yatl_data:
+            errors.append("Triggers section missing in YATL data")
+        else:
+            for expected_trigger in expected_outcome["triggers"]:
+                if not any(t["type"] == expected_trigger["type"] and t.get("cron") == expected_trigger.get("cron") for t in yatl_data["triggers"]):
+                    errors.append(f"Trigger not found: {expected_trigger}")
 
-    for transition in expected_outcome["transitions"]:
-        from_state = yatl_data["states"][transition["from"]]
-        if not any(
-            t["event"] == transition["event"] and t["target"] == transition["to"] for t in from_state["transitions"]
-        ):
-            errors.append(f"Transition not found: {transition}")
+    for expected_state in expected_outcome["states"]:
+        if expected_state["name"] not in yatl_data["states"]:
+            errors.append(f"State not found: {expected_state['name']}")
+        else:
+            yatl_state = yatl_data["states"][expected_state["name"]]
+            if yatl_state.get("type") != expected_state.get("type"):
+                errors.append(f"State type mismatch for {expected_state['name']}: expected {expected_state.get('type')}, got {yatl_state.get('type')}")
+            if yatl_state.get("action") != expected_state.get("action"):
+                errors.append(f"State action mismatch for {expected_state['name']}: expected {expected_state.get('action')}, got {yatl_state.get('action')}")
+            if yatl_state.get("next") != expected_state.get("next"):
+                errors.append(f"State next mismatch for {expected_state['name']}: expected {expected_state.get('next')}, got {yatl_state.get('next')}")
+
+    for expected_action in expected_outcome["actions"]:
+        if expected_action["name"] not in yatl_data["actions"]:
+            errors.append(f"Action not found: {expected_action['name']}")
+        else:
+            yatl_action = yatl_data["actions"][expected_action["name"]]
+            if yatl_action.get("description") != expected_action.get("description"):
+                errors.append(f"Action description mismatch for {expected_action['name']}")
+            if yatl_action.get("language") != expected_action.get("language"):
+                errors.append(f"Action language mismatch for {expected_action['name']}")
+
+    yatl_variables = set(yatl_data["variables"].keys())
+    expected_variables = set(v["name"] for v in expected_outcome["variables"])
+    if yatl_variables != expected_variables:
+        errors.append(f"Variables mismatch: expected {expected_variables}, got {yatl_variables}")
 
     return errors
 

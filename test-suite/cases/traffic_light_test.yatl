@@ -1,23 +1,46 @@
 name: TrafficLightTest
+description: "A simple traffic light test with a schedule trigger"
+version: "1.2"
+triggers:
+  - type: schedule
+    cron: "*/5 * * * *"  # Run every 5 minutes
 initial_state: Red
 
 states:
   Red:
-    type: normal
-    transitions:
-      - event: TimerExpired
-        target: Green
+    type: task
+    action: turnOnRed
+    next: Green
   Green:
-    type: normal
-    transitions:
-      - event: TimerExpired
-        target: Yellow
+    type: task
+    action: turnOnGreen
+    next: Yellow
   Yellow:
-    type: normal
-    transitions:
-      - event: TimerExpired
-        target: Red
+    type: task
+    action: turnOnYellow
+    next: Red
 
-events:
-  TimerExpired:
-    data: []
+actions:
+  turnOnRed:
+    description: "Turn on the red light"
+    language: python
+    code: |
+      print("Red light on")
+      context['current_color'] = 'red'
+
+  turnOnGreen:
+    description: "Turn on the green light"
+    language: python
+    code: |
+      print("Green light on")
+      context['current_color'] = 'green'
+
+  turnOnYellow:
+    description: "Turn on the yellow light"
+    language: python
+    code: |
+      print("Yellow light on")
+      context['current_color'] = 'yellow'
+
+variables:
+  current_color: string

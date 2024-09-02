@@ -1,16 +1,31 @@
 # YATL Core
 
-🦑 YATL (Yet Another Tentacle Language) is an innovative, octopus-themed markup language designed for defining and managing state machines. This repository contains the core specification and test suite for YATL.
+🦑 YATL (Yet Another Tentacle Language) is an innovative, octopus-themed markup language designed for defining and managing state machines and workflows. This repository contains the core specification and test suite for YATL.
+
+## Current Version: 1.2
+
+YATL 1.2 introduces exciting new features, including a trigger system for initiating workflows.
+
+### New in YATL 1.2
+
+- **Trigger System**: Define how workflows are initiated using HTTP, Webhook, Schedule, or Cloud Event triggers.
+- **Enhanced Context**: Actions now have access to trigger-specific data.
+- **Improved Task States**: Simplified state definitions for common tasks.
 
 ## Repository Structure
 
 - `specification/`: Contains the YATL language specification
+  - `yatl-spec.md`: The main specification file
+  - `versions/`: Contains the YATL language spec versions
+    - `yatl-spec-v1.0.md`: Original YATL 1.0 specification
+    - `yatl-spec-v1.2.md`: Changelog for YATL 1.2
+- `examples/`: Example YATL workflows
 - `test-suite/`: Houses the YATL test cases and expected outcomes
 - `docs/`: Additional documentation including contribution guidelines
 
 ## Getting Started
 
-To get started with YATL, please refer to the [specification](specification/yatl-spec.md).
+To get started with YATL, please refer to the [latest specification](specification/yatl-spec.md).
 
 ## Development Setup
 
@@ -48,3 +63,7 @@ We welcome contributions! Please see our [contributing guidelines](docs/contribu
 ## License
 
 YATL is released under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+Special thanks to all the contributors who have helped shape YATL into what it is today. Your tentacles have reached far and wide!
